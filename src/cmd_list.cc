@@ -313,4 +313,71 @@ void LLenCmd::DoCmd(PClient* client) {
     client->SetRes(CmdRes::kErrOther, s.ToString());
   }
 }
+
+BLPopCmd::BLPopCmd(const std::string& name, int16_t arity)
+    : BaseCmd(name, arity, kCmdFlagsWrite, kAclCategoryWrite | kAclCategoryList) {}
+
+bool BLPopCmd::DoInitial(PClient* client) {
+  //blpop list1 list2 timeout
+  //add keys
+  std::vector<std::string> keys(client->argv_.begin(), client->argv_.end());
+  keys.erase(keys.begin());
+  keys.pop_back();
+  // removeDuplicates(keys);
+  client->SetKey(keys);
+
+  // check timeout
+  int64_t timeout = 0;
+  if (pstd::String2int(client->argv_.back().data(), &timeout)==0) {
+    client->SetRes(CmdRes::kInvalidInt);
+    return false;
+  }
+  constexpr int64_t seconds_of_ten_years = 10 * 365 * 24 * 3600;
+  if (timeout < 0 || timeout > seconds_of_ten_years) {
+    client->SetRes(CmdRes::kErrOther,
+                "timeout can't be a negative value and can't exceed the number of seconds in 10 years");
+    return false;
+  }
+  
+  if (timeout > 0) {
+    auto now = std::chrono::system_clock::now();
+    expire_time_ =
+        std::chrono::time_point_cast<std::chrono::milliseconds>(now).time_since_epoch().count() + timeout * 1000;
+  } 
+  return true;
+}
+
+void BLPopCmd::DoCmd(PClient* client) {
+  for (auto& this_key : client->Keys()) {
+    std::vector<std::string> elements;
+    storage::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->LPop(this_key, 1, &elements);
+    if (s.ok()) {
+      client->AppendArrayLen(2);
+      client->AppendString(this_key);
+      client->AppendString(elements[0]);
+      // write a binlog of lpop
+      // binlog_args_.block_type = BlockKeyType::Blpop;
+      // binlog_args_.key = this_key;
+      // binlog_args_.db = db_;
+      // binlog_args_.conn = GetConn();
+      // is_binlog_deferred_ = false;
+      return;
+    } else if (s.IsNotFound()) {
+      continue;
+    } else {
+      client->SetRes(CmdRes::kErrOther, s.ToString());
+      return;
+    }
+  }
+  // is_binlog_deferred_ = true;
+  // if (auto client_conn = std::dynamic_pointer_cast<PikaClientConn>(GetConn()); client_conn != nullptr) {
+  //   if (client_conn->IsInTxn()) {
+  //     res_.AppendArrayLen(-1);
+  //     return ;
+  //   }
+  // }
+  // BlockThisClientToWaitLRPush(BlockKeyType::Blpop, keys_, expire_time_);
+
+}
+
 }  // namespace pikiwidb

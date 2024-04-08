@@ -117,6 +117,8 @@ const std::string kCmdNameLSet = "lset";
 const std::string kCmdNameLInsert = "linsert";
 const std::string kCmdNameLIndex = "lindex";
 const std::string kCmdNameLLen = "llen";
+const std::string kCmdNameBLPop = "blpop";
+
 
 // zset cmd
 const std::string kCmdNameZAdd = "zadd";

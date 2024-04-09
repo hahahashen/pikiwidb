@@ -332,23 +332,23 @@ bool SScanCmd::DoInitial(PClient* client) {
 void SScanCmd::DoCmd(PClient* client) {
   const auto& argv = client->argv_;
   // parse arguments
-  int64_t cursor=0;
-  int64_t count=10;
+  int64_t cursor = 0;
+  int64_t count = 10;
   std::string pattern{"*"};
   if (pstd::String2int(argv[2], &cursor) == 0) {
-    client->SetRes(CmdRes::kInvalidCursor,kCmdNameSScan);
+    client->SetRes(CmdRes::kInvalidCursor, kCmdNameSScan);
     return;
   }
   for (size_t i = 3; i < argv.size(); i += 2) {
     if (auto lower = pstd::StringToLower(argv[i]); kMatchSymbol == lower) {
       pattern = argv[i + 1];
     } else if (kCountSymbol == lower) {
-      if (pstd::String2int(argv[i + 1], &count) == 0 ) {
+      if (pstd::String2int(argv[i + 1], &count) == 0) {
         client->SetRes(CmdRes::kInvalidInt, kCmdNameSScan);
         return;
       }
-      if (count<0){
-        client->SetRes(CmdRes::kSyntaxErr,kCmdNameSScan);
+      if (count < 0) {
+        client->SetRes(CmdRes::kSyntaxErr, kCmdNameSScan);
         return;
       }
     } else {
@@ -373,7 +373,7 @@ void SScanCmd::DoCmd(PClient* client) {
   client->AppendString(std::to_string(next_cursor));
   client->AppendArrayLenUint64(members.size());
   for (const auto& member : members) {
-    client->AppendString(member); 
+    client->AppendString(member);
   }
 }
 }  // namespace pikiwidb

@@ -105,7 +105,6 @@ const std::string kCmdNameSDiff = "sdiff";
 const std::string kCmdNameSDiffstore = "sdiffstore";
 const std::string kCmdNameSScan = "sscan";
 
-
 // list cmd
 const std::string kCmdNameLPush = "lpush";
 const std::string kCmdNameLPushx = "lpushx";

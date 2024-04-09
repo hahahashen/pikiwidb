@@ -320,7 +320,7 @@ void SDiffstoreCmd::DoCmd(PClient* client) {
 SScanCmd::SScanCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsReadonly, kAclCategoryRead | kAclCategorySet) {}
 
-bool HScanCmd::DoInitial(PClient* client) {
+bool SScanCmd::DoInitial(PClient* client) {
   if (auto size = client->argv_.size(); size != 3 && size != 5 && size != 7) {
     client->SetRes(CmdRes::kSyntaxErr);
     return false;
@@ -336,7 +336,7 @@ void SScanCmd::DoCmd(PClient* client) {
   int64_t count{10};
   std::string pattern{"*"};
   if (pstd::String2int(argv[2], &cursor) == 0) {
-    client->SetRes(CmdRes::kInvalidCursor);
+    client->SetRes(CmdRes::kInvalidCursor,kCmdNameSScan);
     return;
   }
   for (size_t i = 3; i < argv.size(); i += 2) {
@@ -348,10 +348,11 @@ void SScanCmd::DoCmd(PClient* client) {
         return;
       }
       if (count<0){
-        client->SetRes(CmdRes::kSyntaxErr)
+        client->SetRes(CmdRes::kSyntaxErr,kCmdNameSScan);
+        return;
       }
     } else {
-      client->SetRes(CmdRes::kErrOther, kCmdNameSScan);
+      client->SetRes(CmdRes::kSyntaxErr, kCmdNameSScan);
       return;
     }
   }

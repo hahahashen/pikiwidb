@@ -360,9 +360,5 @@ var _ = Describe("Hash", Ordered, func() {
 		keys, cursor := hScan.Val()
 		Expect(cursor).To(Equal(uint64(0)))
 		Expect(keys).To(ConsistOf([]string{"key1", "value1","key2","value2", "key3","value3"}))
-
-		
-
-		
 	})
 })

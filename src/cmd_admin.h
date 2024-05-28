@@ -112,6 +112,14 @@ class PingCmd : public BaseCmd {
   void DoCmd(PClient* client) override;
 };
 
+/* InfoCmd is used to show information about application, which has several sections.
+* server : General information about the Redis server, like tcp_port, run_id
+* stats : General statistics
+* cpu : CPU consumption statistics
+* commandstats: Redis command statistics
+* data: used to communication related with raft
+* raft: General information related with raft
+*/
 class InfoCmd : public BaseCmd {
  public:
   InfoCmd(const std::string& name, int16_t arity);

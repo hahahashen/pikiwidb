@@ -672,4 +672,6 @@ void PClient::SetKey(std::vector<std::string>& names) {
 
 std::unordered_map<std::string, CommandStatistics>* PClient::GetCommandStatMap() { return &cmdstat_map_; }
 
+std::shared_ptr<TimeStat> PClient::GetTimeStat() { return time_stat_; }
+
 }  // namespace pikiwidb

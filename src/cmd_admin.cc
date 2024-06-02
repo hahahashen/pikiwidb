@@ -154,16 +154,10 @@ void PingCmd::DoCmd(PClient* client) { client->SetRes(CmdRes::kPong, "PONG"); }
 const std::string InfoCmd::kInfoSection = "info";
 const std::string InfoCmd::kAllSection = "all";
 const std::string InfoCmd::kServerSection = "server";
-const std::string InfoCmd::kClientsSection = "clients";
 const std::string InfoCmd::kStatsSection = "stats";
 const std::string InfoCmd::kCPUSection = "cpu";
-const std::string InfoCmd::kReplicationSection = "replication";
-const std::string InfoCmd::kKeyspaceSection = "keyspace";
 const std::string InfoCmd::kDataSection = "data";
-const std::string InfoCmd::kRocksDBSection = "rocksdb";
-const std::string InfoCmd::kDebugSection = "debug";
 const std::string InfoCmd::kCommandStatsSection = "commandstats";
-const std::string InfoCmd::kCacheSection = "cache";
 const std::string InfoCmd::kRaftSection = "RAFT";
 
 const std::string InfoCmd::kInfoSection = "info";
@@ -408,14 +402,14 @@ void InfoCmd::InfoCommandStats(PClient* client, std::string& info) {
              << "\r\n";
   auto cmdstat_map = client->GetCommandStatMap();
   for (auto iter : *cmdstat_map) {
-    if (iter.second.cmd_count != 0) {
+    if (iter.second.cmd_count_ != 0) {
       tmp_stream << iter.first << ":"
-                 << "calls=" << iter.second.cmd_count
-                 << ", usec=" << MethodofTotalTimeCalculation(iter.second.cmd_time_consuming) << ", usec_per_call=";
-      if (!iter.second.cmd_time_consuming) {
+                 << "calls=" << iter.second.cmd_count_
+                 << ", usec=" << MethodofTotalTimeCalculation(iter.second.cmd_time_consuming_) << ", usec_per_call=";
+      if (!iter.second.cmd_time_consuming_) {
         tmp_stream << 0 << "\r\n";
       } else {
-        tmp_stream << MethodofCommandStatistics(iter.second.cmd_time_consuming, iter.second.cmd_count) << "\r\n";
+        tmp_stream << MethodofCommandStatistics(iter.second.cmd_time_consuming_, iter.second.cmd_count_) << "\r\n";
       }
     }
   }

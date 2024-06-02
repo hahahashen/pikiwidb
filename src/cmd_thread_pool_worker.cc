@@ -45,14 +45,14 @@ void CmdWorkThreadPoolWorker::Work() {
       if (cmdstat_map->find(task->CmdName()) == cmdstat_map->end()) {
         cmdstat_map->emplace(task->CmdName(), statistics);
       }
-      task->Client()->time_stat_->dequeue_ts_ = pstd::NowMicros();
+      task->Client()->GetTimeStat()->SetDequeueTs(pstd::NowMicros());
       task->Run(cmdPtr);
 
       // Info Commandstats used
 
-      task->Client()->time_stat_->process_done_ts_ = pstd::NowMicros();
-      (*cmdstat_map)[task->CmdName()].cmd_count.fetch_add(1);
-      (*cmdstat_map)[task->CmdName()].cmd_time_consuming.fetch_add(task->Client()->time_stat_->total_time());
+      task->Client()->GetTimeStat()->SetProcessDoneTs(pstd::NowMicros());
+      (*cmdstat_map)[task->CmdName()].cmd_count_.fetch_add(1);
+      (*cmdstat_map)[task->CmdName()].cmd_time_consuming_.fetch_add(task->Client()->GetTimeStat()->GetTotalTime());
 
       g_pikiwidb->PushWriteTask(task->Client());
     }

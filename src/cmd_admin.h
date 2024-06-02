@@ -140,17 +140,10 @@ class InfoCmd : public BaseCmd {
   const static std::string kInfoSection;
   const static std::string kAllSection;
   const static std::string kServerSection;
-  const static std::string kClientsSection;
   const static std::string kStatsSection;
-  const static std::string kExecCountSection;
   const static std::string kCPUSection;
-  const static std::string kReplicationSection;
-  const static std::string kKeyspaceSection;
   const static std::string kDataSection;
-  const static std::string kRocksDBSection;
-  const static std::string kDebugSection;
   const static std::string kCommandStatsSection;
-  const static std::string kCacheSection;
   const static std::string kRaftSection;
 
   void InfoServer(std::string& info);

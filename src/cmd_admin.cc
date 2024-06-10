@@ -289,31 +289,35 @@ void InfoCmd::InfoRaft(std::string& message) {
     return;
   }
 
-  message += "raft_group_id:" + PRAFT.GetGroupID() + "\r\n";
-  message += "raft_node_id:" + PRAFT.GetNodeID() + "\r\n";
-  message += "raft_peer_id:" + PRAFT.GetPeerID() + "\r\n";
+  std::stringstream tmp_stream;
+
+  tmp_stream << "raft_group_id:" << PRAFT.GetGroupID() << "\r\n";
+  tmp_stream << "raft_node_id:" << PRAFT.GetNodeID() << "\r\n";
+  tmp_stream << "raft_peer_id:" << PRAFT.GetPeerID() << "\r\n";
   if (braft::is_active_state(node_status.state)) {
-    message += "raft_state:up\r\n";
+    tmp_stream << "raft_state:up\r\n";
   } else {
-    message += "raft_state:down\r\n";
+    tmp_stream << "raft_state:down\r\n";
   }
-  message += "raft_role:" + std::string(braft::state2str(node_status.state)) + "\r\n";
-  message += "raft_leader_id:" + node_status.leader_id.to_string() + "\r\n";
-  message += "raft_current_term:" + std::to_string(node_status.term) + "\r\n";
+  tmp_stream << "raft_role:" << std::string(braft::state2str(node_status.state)) << "\r\n";
+  tmp_stream << "raft_leader_id:" << node_status.leader_id.to_string() << "\r\n";
+  tmp_stream << "raft_current_term:" << std::to_string(node_status.term) << "\r\n";
 
   if (PRAFT.IsLeader()) {
     std::vector<braft::PeerId> peers;
     auto status = PRAFT.GetListPeers(&peers);
     if (!status.ok()) {
-      message += "-ERR:" + status.error_str();
+      tmp_stream << "-ERR:" << status.error_str();
       return;
     }
 
     for (int i = 0; i < peers.size(); i++) {
-      message += "raft_node" + std::to_string(i) + ":addr=" + butil::ip2str(peers[i].addr.ip).c_str() +
-                 ",port=" + std::to_string(peers[i].addr.port) + "\r\n";
+      tmp_stream << "raft_node" << std::to_string(i) << ":addr=" << butil::ip2str(peers[i].addr.ip).c_str()
+                 << ",port=" << std::to_string(peers[i].addr.port) << "\r\n";
     }
   }
+
+  message.append(tmp_stream.str());
 }
 
 void InfoCmd::InfoServer(std::string& info) {

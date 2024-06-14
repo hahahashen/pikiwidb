@@ -146,6 +146,15 @@ class InfoCmd : public BaseCmd {
   const static std::string kCommandStatsSection;
   const static std::string kRaftSection;
 
+  const std::unordered_map<std::string, InfoSection> sectionMap = {{kAllSection, kInfoAll},
+                                                                   {kServerSection, kInfoServer},
+                                                                   {kStatsSection, kInfoStats},
+                                                                   {kCPUSection, kInfoCPU},
+                                                                   {kDataSection, kInfoData},
+                                                                   {kRaftSection, kInfoRaft},
+                                                                   {kCommandStatsSection, kInfoCommandStats},
+                                                                   {kRaftSection, kInfoRaft}};
+
   void InfoServer(std::string& info);
   void InfoStats(std::string& info);
   void InfoCPU(std::string& info);

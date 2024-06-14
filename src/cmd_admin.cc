@@ -189,20 +189,9 @@ bool InfoCmd::DoInitial(PClient* client) {
   }
 
   const auto& argv_ = client->argv_;
-  if (strcasecmp(argv_[1].data(), kAllSection.data()) == 0) {
-    info_section_ = kInfoAll;
-  } else if (strcasecmp(argv_[1].data(), kServerSection.data()) == 0) {
-    info_section_ = kInfoServer;
-  } else if (strcasecmp(argv_[1].data(), kStatsSection.data()) == 0) {
-    info_section_ = kInfoStats;
-  } else if (strcasecmp(argv_[1].data(), kCPUSection.data()) == 0) {
-    info_section_ = kInfoCPU;
-  } else if (strcasecmp(argv_[1].data(), kDataSection.data()) == 0) {
-    info_section_ = kInfoData;
-  } else if (strcasecmp(argv_[1].data(), kRaftSection.data()) == 0) {
-    info_section_ = kInfoRaft;
-  } else if (strcasecmp(argv_[1].data(), kCommandStatsSection.data()) == 0) {
-    info_section_ = kInfoCommandStats;
+  auto it = sectionMap.find(argv_[1].data());
+  if (it != sectionMap.end()) {
+    info_section_ = it->second;
   }
 
   if (argc != 2) {

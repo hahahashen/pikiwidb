@@ -357,7 +357,8 @@ int PClient::handlePacket(const char* start, int bytes) {
   //  executeCommand();
   //    return static_cast<int>(ptr - start);
   //  }
-  time_stat_->enqueue_ts_ = pstd::NowMicros();
+  auto now = std::chrono::steady_clock::now();
+  time_stat_->SetEnqueueTs(now);
   g_pikiwidb->SubmitFast(std::make_shared<CmdThreadPoolTask>(shared_from_this()));
 
   // check transaction

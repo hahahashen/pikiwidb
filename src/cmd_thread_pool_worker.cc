@@ -45,12 +45,13 @@ void CmdWorkThreadPoolWorker::Work() {
       if (cmdstat_map->find(task->CmdName()) == cmdstat_map->end()) {
         cmdstat_map->emplace(task->CmdName(), statistics);
       }
-      task->Client()->GetTimeStat()->SetDequeueTs(pstd::NowMicros());
+      auto now = std::chrono::steady_clock::now();
+      task->Client()->GetTimeStat()->SetDequeueTs(now);
       task->Run(cmdPtr);
 
       // Info Commandstats used
-
-      task->Client()->GetTimeStat()->SetProcessDoneTs(pstd::NowMicros());
+      now = std::chrono::steady_clock::now();
+      task->Client()->GetTimeStat()->SetProcessDoneTs(now);
       (*cmdstat_map)[task->CmdName()].cmd_count_.fetch_add(1);
       (*cmdstat_map)[task->CmdName()].cmd_time_consuming_.fetch_add(task->Client()->GetTimeStat()->GetTotalTime());
 

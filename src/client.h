@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <set>
 #include <span>
 #include <unordered_map>
@@ -32,20 +33,29 @@ struct CommandStatistics {
 };
 
 struct TimeStat {
+  using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
+
   TimeStat() = default;
+
   void Reset() {
-    enqueue_ts_ = dequeue_ts_ = 0;
-    process_done_ts_ = 0;
+    enqueue_ts_ = TimePoint::min();
+    dequeue_ts_ = TimePoint::min();
+    process_done_ts_ = TimePoint::min();
   }
 
-  uint64_t GetTotalTime() const { return process_done_ts_ > enqueue_ts_ ? process_done_ts_ - enqueue_ts_ : 0; }
-  void SetEnqueueTs(uint64_t now_time) { enqueue_ts_ = now_time; }
-  void SetDequeueTs(uint64_t now_time) { dequeue_ts_ = now_time; }
-  void SetProcessDoneTs(uint64_t now_time) { process_done_ts_ = now_time; }
+  uint64_t GetTotalTime() const {
+    return (process_done_ts_ > enqueue_ts_)
+               ? std::chrono::duration_cast<std::chrono::milliseconds>(process_done_ts_ - enqueue_ts_).count()
+               : 0;
+  }
 
-  uint64_t enqueue_ts_;
-  uint64_t dequeue_ts_;
-  uint64_t process_done_ts_;
+  void SetEnqueueTs(TimePoint now_time) { enqueue_ts_ = now_time; }
+  void SetDequeueTs(TimePoint now_time) { dequeue_ts_ = now_time; }
+  void SetProcessDoneTs(TimePoint now_time) { process_done_ts_ = now_time; }
+
+  TimePoint enqueue_ts_;
+  TimePoint dequeue_ts_;
+  TimePoint process_done_ts_;
 };
 
 class CmdRes {

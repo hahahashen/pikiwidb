@@ -188,6 +188,9 @@ bool InfoCmd::DoInitial(PClient* client) {
   auto it = sectionMap.find(argv_[1].data());
   if (it != sectionMap.end()) {
     info_section_ = it->second;
+  } else {
+    client->SetRes(CmdRes::kErrOther, "the cmd is not supported");
+    return false;
   }
 
   if (argc != 2) {
@@ -292,7 +295,8 @@ void InfoCmd::InfoRaft(std::string& message) {
     std::vector<braft::PeerId> peers;
     auto status = PRAFT.GetListPeers(&peers);
     if (!status.ok()) {
-      tmp_stream << "-ERR " << status.error_str()<<"\r\n";
+      tmp_stream.str("-ERR ");
+      tmp_stream << status.error_str() << "\r\n";
       return;
     }
 

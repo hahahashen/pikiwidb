@@ -179,10 +179,6 @@ InfoCmd::InfoCmd(const std::string& name, int16_t arity) : BaseCmd(name, arity, 
 
 bool InfoCmd::DoInitial(PClient* client) {
   size_t argc = client->argv_.size();
-  if (argc > 4) {
-    client->SetRes(CmdRes::kSyntaxErr);
-    return false;
-  }
   if (argc == 1) {
     info_section_ = kInfo;
     return true;
@@ -268,13 +264,13 @@ void InfoCmd::DoCmd(PClient* client) {
 */
 void InfoCmd::InfoRaft(std::string& message) {
   if (!PRAFT.IsInitialized()) {
-    message += "-ERR:Don't already cluster member \r\n";
+    message += "-ERR Don't already cluster member\r\n";
     return;
   }
 
   auto node_status = PRAFT.GetNodeStatus();
   if (node_status.state == braft::State::STATE_END) {
-    message += "-ERR:Node is not initialized \r\n";
+    message += "-ERR Node is not initialized\r\n";
     return;
   }
 
@@ -296,7 +292,7 @@ void InfoCmd::InfoRaft(std::string& message) {
     std::vector<braft::PeerId> peers;
     auto status = PRAFT.GetListPeers(&peers);
     if (!status.ok()) {
-      tmp_stream << "-ERR:" << status.error_str();
+      tmp_stream << "-ERR " << status.error_str()<<"\r\n";
       return;
     }
 

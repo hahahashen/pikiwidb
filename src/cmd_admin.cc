@@ -9,6 +9,8 @@
 #include <sys/statvfs.h>
 #include <sys/time.h>
 #include <sys/utsname.h>
+#include <algorithm>
+#include <cctype>
 
 #include "cmd_admin.h"
 #include <cstddef>
@@ -158,7 +160,7 @@ const std::string InfoCmd::kStatsSection = "stats";
 const std::string InfoCmd::kCPUSection = "cpu";
 const std::string InfoCmd::kDataSection = "data";
 const std::string InfoCmd::kCommandStatsSection = "commandstats";
-const std::string InfoCmd::kRaftSection = "RAFT";
+const std::string InfoCmd::kRaftSection = "raft";
 
 const std::string InfoCmd::kInfoSection = "info";
 const std::string InfoCmd::kAllSection = "all";
@@ -184,19 +186,23 @@ bool InfoCmd::DoInitial(PClient* client) {
     return true;
   }
 
-  const auto& argv_ = client->argv_;
-  auto it = sectionMap.find(argv_[1].data());
-  if (it != sectionMap.end()) {
-    info_section_ = it->second;
-  } else {
-    client->SetRes(CmdRes::kErrOther, "the cmd is not supported");
-    return false;
-  }
+  std::string argv_ = client->argv_[1].data();
+  //统一转换成为小写后进行比较
+  std::transform(argv_.begin(), argv_.end(), argv_.begin(), [](unsigned char c) { return std::tolower(c); });
+  if (argc == 2) {
+    auto it = sectionMap.find(argv_);
+    if (it != sectionMap.end()) {
+      info_section_ = it->second;
+    } else {
+      client->SetRes(CmdRes::kErrOther, "the cmd is not supported");
+      return false;
+    }
 
-  if (argc != 2) {
+  } else {
     client->SetRes(CmdRes::kSyntaxErr);
     return false;
   }
+
   return true;
 }
 

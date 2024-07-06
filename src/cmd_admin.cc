@@ -187,7 +187,7 @@ bool InfoCmd::DoInitial(PClient* client) {
   }
 
   std::string argv_ = client->argv_[1].data();
-  //统一转换成为小写后进行比较
+  // convert section to lowercase
   std::transform(argv_.begin(), argv_.end(), argv_.begin(), [](unsigned char c) { return std::tolower(c); });
   if (argc == 2) {
     auto it = sectionMap.find(argv_);
@@ -197,16 +197,13 @@ bool InfoCmd::DoInitial(PClient* client) {
       client->SetRes(CmdRes::kErrOther, "the cmd is not supported");
       return false;
     }
-
   } else {
     client->SetRes(CmdRes::kSyntaxErr);
     return false;
   }
-
   return true;
 }
 
-// @todo The info raft command is only supported for the time being
 void InfoCmd::DoCmd(PClient* client) {
   std::string info;
   switch (info_section_) {

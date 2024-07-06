@@ -13,8 +13,11 @@
 #include "pstd/log.h"
 #include "pstd/noncopyable.h"
 #include "storage/storage.h"
+#include "pcache.h"
 
 namespace pikiwidb {
+//class PCache;
+//class PCacheLoadThread;
 
 class DB {
  public:
@@ -39,6 +42,8 @@ class DB {
 
   int GetDbIndex() { return db_index_; }
 
+  std::unique_ptr<PCache>& GetCache(){return cache_;}
+
  private:
   const int db_index_ = 0;
   const std::string db_path_;
@@ -51,6 +56,9 @@ class DB {
   std::shared_mutex storage_mutex_;
   std::unique_ptr<storage::Storage> storage_;
   bool opened_ = false;
+
+  std::unique_ptr<PCache> cache_;
+ 
 };
 
 }  // namespace pikiwidb

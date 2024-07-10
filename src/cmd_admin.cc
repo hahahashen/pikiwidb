@@ -270,13 +270,13 @@ void InfoCmd::DoCmd(PClient* client) {
 */
 void InfoCmd::InfoRaft(std::string& message) {
   if (!PRAFT.IsInitialized()) {
-    message += "-ERR Don't already cluster member\r\n";
+    message += "-ERR Not a cluster member.\r\n";
     return;
   }
 
   auto node_status = PRAFT.GetNodeStatus();
   if (node_status.state == braft::State::STATE_END) {
-    message += "-ERR Node is not initialized\r\n";
+    message += "-ERR Node is not initialized.\r\n";
     return;
   }
 
@@ -398,17 +398,24 @@ void InfoCmd::InfoCommandStats(PClient* client, std::string& info) {
   auto cmdstat_map = client->GetCommandStatMap();
   for (auto iter : *cmdstat_map) {
     if (iter.second.cmd_count_ != 0) {
-      tmp_stream << iter.first << ":"
-                 << "calls=" << iter.second.cmd_count_
-                 << ", usec=" << MethodofTotalTimeCalculation(iter.second.cmd_time_consuming_) << ", usec_per_call=";
-      if (!iter.second.cmd_time_consuming_) {
-        tmp_stream << 0 << "\r\n";
-      } else {
-        tmp_stream << MethodofCommandStatistics(iter.second.cmd_time_consuming_, iter.second.cmd_count_) << "\r\n";
-      }
+      tmp_stream << iter.first << ":" << FormatCommandStatLine(iter.second);
     }
   }
   info.append(tmp_stream.str());
+}
+
+std::string InfoCmd::FormatCommandStatLine(const CommandStatistics& stats) {
+  std::stringstream stream;
+  stream.precision(2);
+  stream.setf(std::ios::fixed);
+  stream << "calls=" << stats.cmd_count_ << ", usec=" << MethodofTotalTimeCalculation(stats.cmd_time_consuming_)
+         << ", usec_per_call=";
+  if (!stats.cmd_time_consuming_) {
+    stream << 0 << "\r\n";
+  } else {
+    stream << MethodofCommandStatistics(stats.cmd_time_consuming_, stats.cmd_count_) << "\r\n";
+  }
+  return stream.str();
 }
 
 CmdDebug::CmdDebug(const std::string& name, int arity) : BaseCmdGroup(name, kCmdFlagsAdmin, kAclCategoryAdmin) {}

@@ -152,8 +152,7 @@ class InfoCmd : public BaseCmd {
                                                                    {kCPUSection, kInfoCPU},
                                                                    {kDataSection, kInfoData},
                                                                    {kRaftSection, kInfoRaft},
-                                                                   {kCommandStatsSection, kInfoCommandStats},
-                                                                   {kRaftSection, kInfoRaft}};
+                                                                   {kCommandStatsSection, kInfoCommandStats}};
 
   void InfoServer(std::string& info);
   void InfoStats(std::string& info);

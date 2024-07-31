@@ -53,6 +53,7 @@ class CmdRes {
     kInvalidCursor,
     kWrongLeader,
     kMultiKey,
+    kCacheMiss,
   };
 
   CmdRes() = default;
@@ -61,6 +62,8 @@ class CmdRes {
   bool None() const { return ret_ == kNone && message_.empty(); }
 
   bool Ok() const { return ret_ == kOK || ret_ == kNone; }
+
+  bool CacheMiss() const { return ret_ == kCacheMiss; }
 
   void Clear() {
     message_.clear();

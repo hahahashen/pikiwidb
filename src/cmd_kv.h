@@ -19,10 +19,16 @@ class GetCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ std::string value_;
+ rocksdb::Status s_;
+ int64_t ttl_ = 0;
+
   void DoCmd(PClient *client) override;
-  // void DoThroughDB(PClient *client) override;
-  // void DoUpdateCache(PClient *client) override;
-  // void ReadCache(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+
+ 
 };
 
 class SetCmd : public BaseCmd {
@@ -32,17 +38,19 @@ class SetCmd : public BaseCmd {
 
  protected:
   bool DoInitial(PClient *client) override;
+  
 
  private:
   void DoCmd(PClient *client) override;
-  // void DoThroughDB(PClient *client) override;
-  // void DoUpdateCache(PClient *client) override;
-  // void ReadCache(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 
   std::string value_;
+  bool has_ttl_ = false;
   std::string target_;
   int64_t sec_ = 0;
   SetCmd::SetCondition condition_{kNONE};
+  rocksdb::Status s_;
 };
 
 class BitOpCmd : public BaseCmd {
@@ -71,6 +79,12 @@ class StrlenCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
+ int64_t sec_ = 0;
+ std::string value_;
 };
 
 class SetExCmd : public BaseCmd {
@@ -81,7 +95,11 @@ class SetExCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
+ int64_t sec_ = 0;
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class PSetExCmd : public BaseCmd {
@@ -92,7 +110,11 @@ class PSetExCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ int64_t msec_ = 0;
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class SetNXCmd : public BaseCmd {
@@ -114,7 +136,10 @@ class AppendCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class GetSetCmd : public BaseCmd {
@@ -125,7 +150,10 @@ class GetSetCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class MGetCmd : public BaseCmd {
@@ -136,7 +164,12 @@ class MGetCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
+ std::vector<storage::ValueStatus> db_value_status_array_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
 };
 
 class MSetCmd : public BaseCmd {
@@ -147,7 +180,11 @@ class MSetCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ std::vector<storage::KeyValue> kvs_;
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class BitCountCmd : public BaseCmd {
@@ -169,7 +206,10 @@ class DecrCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class IncrCmd : public BaseCmd {
@@ -180,7 +220,10 @@ class IncrCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ rocksdb::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class IncrbyCmd : public BaseCmd {
@@ -189,9 +232,14 @@ class IncrbyCmd : public BaseCmd {
 
  protected:
   bool DoInitial(PClient *client) override;
+  
 
  private:
+ rocksdb::Status s_;
+ int64_t by_ = 0;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 class DecrbyCmd : public BaseCmd {
  public:
@@ -201,7 +249,11 @@ class DecrbyCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ int64_t by_ = 0;
+ storage::Status s_;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class SetBitCmd : public BaseCmd {
@@ -234,7 +286,11 @@ class IncrbyFloatCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
+ std::string value_;
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class GetRangeCmd : public BaseCmd {
@@ -245,7 +301,15 @@ class GetRangeCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ int64_t start_ = 0;
+  int64_t end_ = 0;
+  storage::Status s_;
+  std::string value_;
+  int64_t sec_ = 0;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
 };
 
 class SetRangeCmd : public BaseCmd {
@@ -256,7 +320,11 @@ class SetRangeCmd : public BaseCmd {
   bool DoInitial(PClient *client) override;
 
  private:
+ storage::Status s_;
+ int64_t offset_ = 0;
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class MSetnxCmd : public BaseCmd {

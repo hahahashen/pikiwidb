@@ -48,6 +48,8 @@ class TypeCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient* client) override;
+ void DoThroughDB(PClient *client) override;
+ void ReadCache(PClient *client) override;
 };
 
 class ExpireCmd : public BaseCmd {
@@ -132,6 +134,9 @@ class PersistCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient* client) override;
+   rocksdb::Status s_;
+ void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
 };
 
 class KeysCmd : public BaseCmd {

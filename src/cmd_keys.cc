@@ -14,7 +14,8 @@
 namespace pikiwidb {
 
 DelCmd::DelCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite| kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 bool DelCmd::DoInitial(PClient* client) {
   std::vector<std::string> keys(client->argv_.begin() + 1, client->argv_.end());
   client->SetKey(keys);
@@ -32,9 +33,7 @@ void DelCmd::DoCmd(PClient* client) {
   }
 }
 
-void DelCmd::DoThroughDB(PClient* client) {
-  DoCmd(client);
-}
+void DelCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void DelCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
@@ -44,7 +43,8 @@ void DelCmd::DoUpdateCache(PClient* client) {
 }
 
 ExistsCmd::ExistsCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsReadonly | kCmdFlagsDoThroughDB | kCmdFlagsReadCache, kAclCategoryRead | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsReadonly | kCmdFlagsDoThroughDB | kCmdFlagsReadCache,
+              kAclCategoryRead | kAclCategoryKeyspace) {}
 
 bool ExistsCmd::DoInitial(PClient* client) {
   std::vector<std::string> keys(client->argv_.begin() + 1, client->argv_.end());
@@ -67,14 +67,14 @@ void ExistsCmd::DoCmd(PClient* client) {
 }
 
 void ExistsCmd::ReadCache(PClient* client) {
-  auto keys=client->Keys();
+  auto keys = client->Keys();
   if (1 < keys.size()) {
     client->SetRes(CmdRes::kCacheMiss);
     return;
   }
   bool exist = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Exists(keys[0]);
-    if (exist) {
-      client->AppendInteger(1);
+  if (exist) {
+    client->AppendInteger(1);
   } else {
     client->SetRes(CmdRes::kCacheMiss);
   }
@@ -86,7 +86,8 @@ void ExistsCmd::DoThroughDB(PClient* client) {
 }
 
 TypeCmd::TypeCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsReadonly|kCmdFlagsDoThroughDB | kCmdFlagsReadCache, kAclCategoryRead | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsReadonly | kCmdFlagsDoThroughDB | kCmdFlagsReadCache,
+              kAclCategoryRead | kAclCategoryKeyspace) {}
 
 bool TypeCmd::DoInitial(PClient* client) {
   client->SetKey(client->argv_[1]);
@@ -105,8 +106,8 @@ void TypeCmd::DoCmd(PClient* client) {
 
 void TypeCmd::ReadCache(PClient* client) {
   std::string key_type;
-  auto key=client->Key();
-  rocksdb::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Type(key, key_type);
+  auto key = client->Key();
+  rocksdb::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Type(key, &key_type);
   if (s.ok()) {
     client->AppendContent(key_type);
   } else {
@@ -120,7 +121,8 @@ void TypeCmd::DoThroughDB(PClient* client) {
 }
 
 ExpireCmd::ExpireCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool ExpireCmd::DoInitial(PClient* client) {
   if (pstd::String2int(client->argv_[2], &sec_) == 0) {
@@ -142,19 +144,18 @@ void ExpireCmd::DoCmd(PClient* client) {
   }
 }
 
-void ExpireCmd::DoThroughDB(PClient* client) {
-  DoCmd(client);
-}
+void ExpireCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void ExpireCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
-    auto key=client->Key();
+    auto key = client->Key();
     PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expire(key, sec_);
   }
 }
 
 TtlCmd::TtlCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsReadonly|kCmdFlagsDoThroughDB | kCmdFlagsReadCache, kAclCategoryRead | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsReadonly | kCmdFlagsDoThroughDB | kCmdFlagsReadCache,
+              kAclCategoryRead | kAclCategoryKeyspace) {}
 
 bool TtlCmd::DoInitial(PClient* client) {
   client->SetKey(client->argv_[1]);
@@ -172,16 +173,16 @@ void TtlCmd::DoCmd(PClient* client) {
 
 void TtlCmd::ReadCache(PClient* client) {
   rocksdb::Status s;
-  auto key=client->Key();
+  auto key = client->Key();
   auto timestamp = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->TTL(key);
   if (timestamp == -3) {
-      client->SetRes(CmdRes::kErrOther, "ttl internal error");
-      return;
-    }
-  if(timestamp!=-2){
+    client->SetRes(CmdRes::kErrOther, "ttl internal error");
+    return;
+  }
+  if (timestamp != -2) {
     client->AppendInteger(timestamp);
-  }else{
-// mean this key not exist
+  } else {
+    // mean this key not exist
     client->SetRes(CmdRes::kCacheMiss);
   }
 }
@@ -192,7 +193,8 @@ void TtlCmd::DoThroughDB(PClient* client) {
 }
 
 PExpireCmd::PExpireCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool PExpireCmd::DoInitial(PClient* client) {
   if (pstd::String2int(client->argv_[2], &msec_) == 0) {
@@ -214,19 +216,18 @@ void PExpireCmd::DoCmd(PClient* client) {
   }
 }
 
-void PExpireCmd::DoThroughDB(PClient* client){
-  DoCmd(client);
-}
+void PExpireCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void PExpireCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
-    auto key=client->Key();
-    PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expire(key, msec_/1000);
+    auto key = client->Key();
+    PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expire(key, msec_ / 1000);
   }
 }
 
 ExpireatCmd::ExpireatCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool ExpireatCmd::DoInitial(PClient* client) {
   if (pstd::String2int(client->argv_[2], &time_stamp_) == 0) {
@@ -244,23 +245,22 @@ void ExpireatCmd::DoCmd(PClient* client) {
     s_ = rocksdb::Status::OK();
   } else {
     client->SetRes(CmdRes::kErrOther, "expireat internal error");
-     s_ = rocksdb::Status::Corruption("expireat internal error");
+    s_ = rocksdb::Status::Corruption("expireat internal error");
   }
 }
 
-void ExpireatCmd::DoThroughDB(PClient* client) {
-  DoCmd(client);
-}
+void ExpireatCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void ExpireatCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
-    auto key=client->Key();
+    auto key = client->Key();
     PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expireat(key, time_stamp_);
   }
 }
 
 PExpireatCmd::PExpireatCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite| kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool PExpireatCmd::DoInitial(PClient* client) {
   if (pstd::String2int(client->argv_[2], &time_stamp_ms_) == 0) {
@@ -283,19 +283,18 @@ void PExpireatCmd::DoCmd(PClient* client) {
   }
 }
 
-void PExpireatCmd::DoThroughDB(PClient* client) {
-  DoCmd(client);
-}
+void PExpireatCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void PExpireatCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
-    auto key=client->Key();
-    PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expireat(key, time_stamp_ms_/1000);
+    auto key = client->Key();
+    PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Expireat(key, time_stamp_ms_ / 1000);
   }
 }
 
 PersistCmd::PersistCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite|kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool PersistCmd::DoInitial(PClient* client) {
   client->SetKey(client->argv_[1]);
@@ -313,13 +312,11 @@ void PersistCmd::DoCmd(PClient* client) {
   }
 }
 
-void PersistCmd::DoThroughDB(PClient* client) {
-  DoCmd(client);
-}
+void PersistCmd::DoThroughDB(PClient* client) { DoCmd(client); }
 
 void PersistCmd::DoUpdateCache(PClient* client) {
   if (s_.ok()) {
-    auto key=client->Key();
+    auto key = client->Key();
     PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Persist(key);
   }
 }
@@ -346,7 +343,8 @@ void KeysCmd::DoCmd(PClient* client) {
 }
 
 PttlCmd::PttlCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsReadonly|kCmdFlagsDoThroughDB | kCmdFlagsReadCache, kAclCategoryRead | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsReadonly | kCmdFlagsDoThroughDB | kCmdFlagsReadCache,
+              kAclCategoryRead | kAclCategoryKeyspace) {}
 
 bool PttlCmd::DoInitial(PClient* client) {
   client->SetKey(client->argv_[1]);
@@ -366,16 +364,16 @@ void PttlCmd::DoCmd(PClient* client) {
 
 void PttlCmd::ReadCache(PClient* client) {
   rocksdb::Status s;
-  auto key=client->Key();
+  auto key = client->Key();
   auto timestamp = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->TTL(key);
   if (timestamp == -3) {
-      client->SetRes(CmdRes::kErrOther, "ttl internal error");
-      return;
-    }
-  if(timestamp!=-2){
-    client->AppendInteger(timestamp*1000);
-  }else{
-// mean this key not exist
+    client->SetRes(CmdRes::kErrOther, "ttl internal error");
+    return;
+  }
+  if (timestamp != -2) {
+    client->AppendInteger(timestamp * 1000);
+  } else {
+    // mean this key not exist
     client->SetRes(CmdRes::kCacheMiss);
   }
 }

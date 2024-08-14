@@ -174,10 +174,10 @@ class PConfig {
   std::atomic_uint64_t rocksdb_ttl_second = 604800;       // default 86400 * 7
   std::atomic_uint64_t rocksdb_periodic_second = 259200;  // default 86400 * 3
 
-    // cache
+  // cache
   std::vector<std::string> cache_type_all;
   std::atomic_bool tmp_cache_disable_flag = false;
-  std::atomic_uint64_t cache_maxmemory= 10737418240;
+  std::atomic_uint64_t cache_maxmemory = 10737418240;
   std::atomic_int cache_num = 5;
   std::atomic_int cache_mode = 1;
   std::atomic_int cache_string = 0;

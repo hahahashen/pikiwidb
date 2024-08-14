@@ -10,14 +10,14 @@
 #include <filesystem>
 #include <string>
 
+#include "pcache.h"
 #include "pstd/log.h"
 #include "pstd/noncopyable.h"
 #include "storage/storage.h"
-#include "pcache.h"
 
 namespace pikiwidb {
-//class PCache;
-//class PCacheLoadThread;
+// class PCache;
+// class PCacheLoadThread;
 
 class DB {
  public:
@@ -42,7 +42,7 @@ class DB {
 
   int GetDbIndex() { return db_index_; }
 
-  std::unique_ptr<PCache>& GetCache(){return cache_;}
+  std::unique_ptr<PCache>& GetCache() { return cache_; }
 
   void CacheConfigInit(cache::CacheConfig& cache_cfg);
 
@@ -60,7 +60,6 @@ class DB {
   bool opened_ = false;
 
   std::unique_ptr<PCache> cache_;
- 
 };
 
 }  // namespace pikiwidb

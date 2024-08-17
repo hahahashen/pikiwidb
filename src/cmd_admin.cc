@@ -162,21 +162,6 @@ const std::string InfoCmd::kDataSection = "data";
 const std::string InfoCmd::kCommandStatsSection = "commandstats";
 const std::string InfoCmd::kRaftSection = "raft";
 
-const std::string InfoCmd::kInfoSection = "info";
-const std::string InfoCmd::kAllSection = "all";
-const std::string InfoCmd::kServerSection = "server";
-const std::string InfoCmd::kClientsSection = "clients";
-const std::string InfoCmd::kStatsSection = "stats";
-const std::string InfoCmd::kCPUSection = "cpu";
-const std::string InfoCmd::kReplicationSection = "replication";
-const std::string InfoCmd::kKeyspaceSection = "keyspace";
-const std::string InfoCmd::kDataSection = "data";
-const std::string InfoCmd::kRocksDBSection = "rocksdb";
-const std::string InfoCmd::kDebugSection = "debug";
-const std::string InfoCmd::kCommandStatsSection = "commandstats";
-const std::string InfoCmd::kCacheSection = "cache";
-const std::string InfoCmd::kRaftSection = "RAFT";
-
 InfoCmd::InfoCmd(const std::string& name, int16_t arity) : BaseCmd(name, arity, kCmdFlagsAdmin, kAclCategoryAdmin) {}
 
 bool InfoCmd::DoInitial(PClient* client) {

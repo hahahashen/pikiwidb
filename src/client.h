@@ -24,7 +24,8 @@ namespace pikiwidb {
 
 struct CommandStatistics {
   CommandStatistics() = default;
-  CommandStatistics(const CommandStatistics& other) {
+  CommandStatistics(const CommandStatistics& other)
+  :cmd_count_(other.cmd_count_.load()), cmd_time_consuming_(other.cmd_time_consuming_.load()) {
     cmd_time_consuming_.store(other.cmd_time_consuming_.load());
     cmd_count_.store(other.cmd_count_.load());
   }

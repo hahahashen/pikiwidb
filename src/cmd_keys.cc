@@ -231,7 +231,7 @@ void PttlCmd::DoCmd(PClient* client) {
   if (timestamp == -3) {
     client->SetRes(CmdRes::kErrOther, "ttl internal error");
   } else {
-    client->AppendInteger(timestamp);
+    client->AppendInteger(timestamp * 1000);
   }
 }
 

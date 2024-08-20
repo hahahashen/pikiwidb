@@ -16,8 +16,6 @@
 #include "storage/storage.h"
 
 namespace pikiwidb {
-// class PCache;
-// class PCacheLoadThread;
 
 class DB {
  public:

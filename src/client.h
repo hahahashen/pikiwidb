@@ -52,9 +52,9 @@ struct TimeStat {
   void SetDequeueTs(TimePoint now_time) { dequeue_ts_ = now_time; }
   void SetProcessDoneTs(TimePoint now_time) { process_done_ts_ = now_time; }
 
-  TimePoint enqueue_ts_;
-  TimePoint dequeue_ts_;
-  TimePoint process_done_ts_;
+  TimePoint enqueue_ts_ = TimePoint::min();
+  TimePoint dequeue_ts_ = TimePoint::min();
+  TimePoint process_done_ts_ = TimePoint::min();
 };
 
 class CmdRes {

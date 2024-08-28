@@ -21,6 +21,9 @@ class HSetCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+  storage::Status s_;
 };
 
 class HGetCmd : public BaseCmd {
@@ -32,6 +35,10 @@ class HGetCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ storage::Status s_;
 };
 
 class HDelCmd : public BaseCmd {
@@ -43,6 +50,10 @@ class HDelCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ rocksdb::Status s_;
+ int32_t deleted_ = 0;
 };
 
 class HMSetCmd : public BaseCmd {
@@ -54,6 +65,9 @@ class HMSetCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 class HMGetCmd : public BaseCmd {
@@ -65,6 +79,10 @@ class HMGetCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 class HGetAllCmd : public BaseCmd {
@@ -76,6 +94,10 @@ class HGetAllCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 class HKeysCmd : public BaseCmd {
@@ -87,6 +109,10 @@ class HKeysCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 class HLenCmd : public BaseCmd {
@@ -98,6 +124,10 @@ class HLenCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 class HStrLenCmd : public BaseCmd {
@@ -109,6 +139,10 @@ class HStrLenCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ storage::Status s_;
 };
 
 class HScanCmd : public BaseCmd {
@@ -134,6 +168,10 @@ class HValsCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ storage::Status s_;
 };
 
 class HIncrbyFloatCmd : public BaseCmd {
@@ -145,6 +183,9 @@ class HIncrbyFloatCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+  void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+  storage::Status s_;
 };
 
 class HSetNXCmd : public BaseCmd {
@@ -156,6 +197,9 @@ class HSetNXCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ storage::Status s_;
 };
 
 class HIncrbyCmd : public BaseCmd {
@@ -167,6 +211,10 @@ class HIncrbyCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ storage::Status s_;
+ int64_t int_by_ = 0;
 };
 
 class HRandFieldCmd : public BaseCmd {
@@ -190,6 +238,10 @@ class HExistsCmd : public BaseCmd {
 
  private:
   void DoCmd(PClient *client) override;
+   void DoThroughDB(PClient *client) override;
+ void DoUpdateCache(PClient *client) override;
+ void ReadCache(PClient *client) override;
+ rocksdb::Status s_;
 };
 
 }  // namespace pikiwidb

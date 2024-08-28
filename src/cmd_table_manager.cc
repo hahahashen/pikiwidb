@@ -21,7 +21,7 @@
 #include "cmd_zset.h"
 #include "pstd_string.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 #define ADD_COMMAND(cmd, argc)                                                      \
   do {                                                                              \
@@ -213,4 +213,4 @@ bool CmdTableManager::CmdExist(const std::string& cmd) const {
 
 uint32_t CmdTableManager::GetCmdId() { return ++cmdId_; }
 
-}  // namespace pikiwidb
+}  // namespace kiwi

@@ -71,7 +71,7 @@ static void Usage() {
   std::cerr << "  -p PORT, --port PORT            Set the port listen on\n";
   std::cerr << "  -l LEVEL, --loglevel LEVEL      Set the log level\n";
   std::cerr << "  -s ADDRESS, --slaveof ADDRESS   Set the slave address\n";
-  std::cerr << "  -c, --redis-compatible-mode          Enable Redis compatibility mode\n";
+  std::cerr << "  -c, --redis-compatible-mode     Enable Redis compatibility mode\n";
   std::cerr << "Examples:\n";
   std::cerr << "  kiwi /path/kiwi.conf\n";
   std::cerr << "  kiwi /path/kiwi.conf --loglevel verbose\n";

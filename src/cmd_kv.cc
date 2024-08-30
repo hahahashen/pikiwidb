@@ -682,8 +682,7 @@ void SetRangeCmd::DoCmd(PClient* client) {
     client->SetRes(CmdRes::kInvalidInt);
     return;
   }
-  // Ref: https://redis.io/docs/latest/commands/setrange/
-  if (g_config.redis_compatible_mode && std::atoi(client->argv_[2].c_str()) > 536870911)
+  if (g_config.redis_compatible_mode && std::atoi(client->argv_[2].c_str()) > 536870911) // Ref: https://redis.io/docs/latest/commands/setrange/
   {
     client->SetRes(CmdRes::kErrOther, "When Redis compatibility mode is enabled, the offset parameter must not exceed 536870911");
     return;

@@ -9,7 +9,10 @@
  */
 
 #include "cmd_kv.h"
+#include <cstddef>
+#include <cstdint>
 #include "common.h"
+#include "config.h"
 #include "pstd_string.h"
 #include "pstd_util.h"
 #include "store.h"
@@ -674,11 +677,17 @@ bool SetRangeCmd::DoInitial(PClient* client) {
 
 void SetRangeCmd::DoCmd(PClient* client) {
   int64_t offset = 0;
+
   if (!(pstd::String2int(client->argv_[2].data(), client->argv_[2].size(), &offset))) {
     client->SetRes(CmdRes::kInvalidInt);
     return;
   }
-
+  // Ref: https://redis.io/docs/latest/commands/setrange/
+  if (g_config.redis_compatible_mode && std::atoi(client->argv_[2].c_str()) > 536870911)
+  {
+    client->SetRes(CmdRes::kErrOther, "When Redis compatibility mode is enabled, the offset parameter must not exceed 536870911");
+    return;
+  }
   int32_t ret = 0;
   storage::Status s =
       PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Setrange(client->Key(), offset, client->argv_[3], &ret);

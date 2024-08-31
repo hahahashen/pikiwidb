@@ -1,15 +1,17 @@
+// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Implemented a set of operation functions and commands related to lists.
  */
 
 #include "cmd_list.h"
 #include "pstd_string.h"
 #include "store.h"
 
-namespace pikiwidb {
+namespace kiwi {
 LPushCmd::LPushCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
               kAclCategoryWrite | kAclCategoryList) {}
@@ -542,4 +544,4 @@ void LLenCmd::DoUpdateCache(PClient* client) {
     PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->PushKeyToAsyncLoadQueue(KEY_TYPE_LIST, key, client);
   }
 }
-}  // namespace pikiwidb
+}  // namespace kiwi

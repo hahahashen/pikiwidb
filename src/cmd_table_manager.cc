@@ -1,8 +1,10 @@
+// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Defined a command table for managing the commands themselves.
  */
 
 #include "cmd_table_manager.h"
@@ -19,7 +21,7 @@
 #include "cmd_zset.h"
 #include "pstd_string.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 #define ADD_COMMAND(cmd, argc)                                                      \
   do {                                                                              \
@@ -59,6 +61,7 @@ void CmdTableManager::InitCmdTable() {
   ADD_SUBCOMMAND(Debug, OOM, 2);
   ADD_SUBCOMMAND(Debug, Segfault, 2);
   ADD_COMMAND(Sort, -2);
+  ADD_COMMAND(Monitor, 1);
 
   // server
   ADD_COMMAND(Flushdb, 1);
@@ -209,4 +212,5 @@ bool CmdTableManager::CmdExist(const std::string& cmd) const {
 }
 
 uint32_t CmdTableManager::GetCmdId() { return ++cmdId_; }
-}  // namespace pikiwidb
+
+}  // namespace kiwi

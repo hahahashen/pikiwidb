@@ -1,8 +1,11 @@
+// Copyright (c) 2024-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2024-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Declared a set of functions responsible for interfacing
+  with RocksDB.
  */
 
 #pragma once
@@ -15,7 +18,7 @@
 #include "pstd/noncopyable.h"
 #include "storage/storage.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 class DB {
  public:
@@ -60,4 +63,4 @@ class DB {
   std::unique_ptr<PCache> cache_;
 };
 
-}  // namespace pikiwidb
+}  // namespace kiwi

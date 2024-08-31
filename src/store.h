@@ -1,8 +1,11 @@
+// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Connects external commands and coordinates the operation
+  of RocksDB.
  */
 
 #pragma once
@@ -17,7 +20,7 @@
 #include "db.h"
 #include "storage/storage.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 enum TaskType { kCheckpoint = 0, kLoadDBFromCheckpoint, kEmpty };
 
@@ -65,4 +68,4 @@ class PStore {
 
 #define PSTORE PStore::Instance()
 
-}  // namespace pikiwidb
+}  // namespace kiwi

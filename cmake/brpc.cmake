@@ -1,4 +1,4 @@
-# Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
+# Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
@@ -23,6 +23,7 @@ ExternalProject_Add(
         -DCMAKE_BUILD_TYPE=${LIB_BUILD_TYPE}
         -DCMAKE_CPP_FLAGS=${CMAKE_CPP_FLAGS}
         -DCMAKE_INSTALL_PREFIX=${BRPC_INSTALL_DIR}
+        -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DCMAKE_FIND_LIBRARY_SUFFIXES=${LIB_INSTALL_PREFIX}
         -DCMAKE_LIBRARY_PATH=${LIB_INSTALL_PREFIX}
         -DGFLAGS_INCLUDE_PATH=${GFLAGS_INCLUDE_DIR}

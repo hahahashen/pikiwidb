@@ -1,17 +1,23 @@
+// Copyright (c) 2023-present, OpenAtom Foundation, Inc.  All rights reserved.
+// This source code is licensed under the BSD-style license found in the
+// LICENSE file in the root directory of this source tree. An additional grant
+// of patent rights can be found in the PATENTS file in the same directory
+
 /*
- * Copyright (c) 2023-present, Qihoo, Inc.  All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+  Implemented a set of operation functions and commands
+  associated with key-value pairs.
  */
 
 #include "cmd_kv.h"
+#include <cstddef>
+#include <cstdint>
 #include "common.h"
+#include "config.h"
 #include "pstd_string.h"
 #include "pstd_util.h"
 #include "store.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 GetCmd::GetCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity,
@@ -355,12 +361,12 @@ DecrCmd::DecrCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsKv | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
               kAclCategoryRead | kAclCategoryString) {}
 
-bool DecrCmd::DoInitial(pikiwidb::PClient* client) {
+bool DecrCmd::DoInitial(kiwi::PClient* client) {
   client->SetKey(client->argv_[1]);
   return true;
 }
 
-void DecrCmd::DoCmd(pikiwidb::PClient* client) {
+void DecrCmd::DoCmd(kiwi::PClient* client) {
   int64_t ret = 0;
   s_ = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Decrby(client->Key(), 1, &ret);
   if (s_.ok()) {
@@ -387,12 +393,12 @@ IncrCmd::IncrCmd(const std::string& name, int16_t arity)
     : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsKv | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
               kAclCategoryWrite | kAclCategoryString) {}
 
-bool IncrCmd::DoInitial(pikiwidb::PClient* client) {
+bool IncrCmd::DoInitial(kiwi::PClient* client) {
   client->SetKey(client->argv_[1]);
   return true;
 }
 
-void IncrCmd::DoCmd(pikiwidb::PClient* client) {
+void IncrCmd::DoCmd(kiwi::PClient* client) {
   int64_t ret = 0;
   s_ = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Incrby(client->Key(), 1, &ret);
   if (s_.ok()) {
@@ -906,6 +912,18 @@ bool SetRangeCmd::DoInitial(PClient* client) {
 }
 
 void SetRangeCmd::DoCmd(PClient* client) {
+  int64_t offset = 0;
+
+  if (!(pstd::String2int(client->argv_[2].data(), client->argv_[2].size(), &offset))) {
+    client->SetRes(CmdRes::kInvalidInt);
+    return;
+  }
+  // Ref: https://redis.io/docs/latest/commands/setrange/
+  if (g_config.redis_compatible_mode && std::atoi(client->argv_[2].c_str()) > 536870911) {
+    client->SetRes(CmdRes::kErrOther,
+                   "When Redis compatibility mode is enabled, the offset parameter must not exceed 536870911");
+    return;
+  }
   int32_t ret = 0;
   s_ =
       PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Setrange(client->Key(), offset_, client->argv_[3], &ret);
@@ -961,4 +979,5 @@ void MSetnxCmd::DoCmd(PClient* client) {
     client->SetRes(CmdRes::kErrOther, s.ToString());
   }
 }
-}  // namespace pikiwidb
+
+}  // namespace kiwi

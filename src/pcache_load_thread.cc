@@ -11,7 +11,7 @@
 #include "pstd/scope_record_lock.h"
 #include "store.h"
 
-namespace pikiwidb {
+namespace kiwi {
 
 PCacheLoadThread::PCacheLoadThread(int zset_cache_start_direction, int zset_cache_field_num_per_key)
     : should_exit_(false),
@@ -158,9 +158,6 @@ bool PCacheLoadThread::LoadSet(std::string& key, PClient* client) {
 // }
 
 bool PCacheLoadThread::LoadKey(const char key_type, std::string& key, PClient* client) {
-  // @tobeChecked
-  // 下面这行代码是pika实现中，分析pikiwidb中不再需要对DB上key锁，由Storage层来进行上锁（该两行留存，待确认无误后删除）
-  // pstd::lock::ScopeRecordLock record_lock(db->LockMgr(), key);
   switch (key_type) {
     case 'k':
       return LoadKV(key, client);
@@ -213,4 +210,4 @@ void* PCacheLoadThread::ThreadMain() {
 
   return nullptr;
 }
-}  // namespace pikiwidb
+}  // namespace kiwi

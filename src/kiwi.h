@@ -7,6 +7,7 @@
   Designed a set of functions and variables associated with
   the kiwi server.
  */
+#pragma once
 
 #include "cmd_table_manager.h"
 #include "cmd_thread_pool.h"
@@ -75,6 +76,8 @@ class KiwiDB final {
 
   PString master_;
   uint16_t master_port_{0};
+
+  std::atomic<bool> redis_compatible_mode = false;
 
   static const uint32_t kRunidSize;
 

@@ -77,7 +77,7 @@ bool PCacheLoadThread::LoadHash(std::string& key, PClient* client) {
   int64_t ttl = -1;
   rocksdb::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->HGetallWithTTL(key, &fvs, &ttl);
   if (!s.ok()) {
-    WARN("load hash failed, key={}",key);
+    WARN("load hash failed, key={}", key);
     return false;
   }
   PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->WriteHashToCache(key, fvs, ttl);
@@ -103,11 +103,11 @@ bool PCacheLoadThread::LoadList(std::string& key, PClient* client) {
   return true;
 }
 
-bool PCacheLoadThread::LoadSet(std::string& key,PClient* client) {
+bool PCacheLoadThread::LoadSet(std::string& key, PClient* client) {
   int32_t len = 0;
   PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->SCard(key, &len);
   if (0 >= len || CACHE_VALUE_ITEM_MAX_SIZE < len) {
-    WARN("can not load key, because item size:{} beyond max item size:{}",len,CACHE_VALUE_ITEM_MAX_SIZE);
+    WARN("can not load key, because item size:{} beyond max item size:{}", len, CACHE_VALUE_ITEM_MAX_SIZE);
     return false;
   }
 
@@ -115,7 +115,7 @@ bool PCacheLoadThread::LoadSet(std::string& key,PClient* client) {
   int64_t ttl = -1;
   rocksdb::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->SMembersWithTTL(key, &values, &ttl);
   if (!s.ok()) {
-    WARN("load set failed, key={}",key);
+    WARN("load set failed, key={}", key);
     return false;
   }
   PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->WriteSetToCache(key, values, ttl);

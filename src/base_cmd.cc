@@ -71,7 +71,7 @@ void BaseCmd::Execute(PClient* client) {
     return;
   }
 
-  if (IsNeedCacheDo() && PCACHE_NONE != g_config.cache_mode.load() &&
+  if (IsNeedCacheDo(client) && PCACHE_NONE != g_config.cache_mode.load() &&
       PSTORE.GetBackend(dbIndex)->GetCache()->CacheStatus() == PCACHE_STATUS_OK) {
     if (IsNeedReadCache()) {
       ReadCache(client);
@@ -95,7 +95,7 @@ void BaseCmd::Execute(PClient* client) {
 bool BaseCmd::IsNeedReadCache() const { return HasFlag(kCmdFlagsReadCache); }
 bool BaseCmd::IsNeedUpdateCache() const { return HasFlag(kCmdFlagsUpdateCache); }
 
-bool BaseCmd::IsNeedCacheDo() const {
+bool BaseCmd::IsNeedCacheDo(PClient* client) const {
   if (g_config.tmp_cache_disable_flag.load()) {
     return false;
   }
@@ -109,7 +109,10 @@ bool BaseCmd::IsNeedCacheDo() const {
       return false;
     }
   } else if (HasFlag(kCmdFlagsZset)) {
-    if (!g_config.cache_zset.load()) {
+    int32_t db_len = 0;
+  PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->ZCard(client->Key(), &db_len);
+  auto zset_cache_field_num_per_key=g_config.zset_cache_field_num_per_key.load();
+    if (!g_config.cache_zset.load() || db_len>zset_cache_field_num_per_key) {
       return false;
     }
   } else if (HasFlag(kCmdFlagsHash)) {

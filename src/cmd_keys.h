@@ -173,7 +173,10 @@ class RenameCmd : public BaseCmd {
   bool DoInitial(PClient* client) override;
 
  private:
+  rocksdb::Status s_;
   void DoCmd(PClient* client) override;
+  void DoThroughDB(PClient* client) override;
+  void DoUpdateCache(PClient* client) override;
 };
 
 class RenameNXCmd : public BaseCmd {

@@ -331,13 +331,13 @@ start_server {tags {"basic"}} {
         r exists mykey
     } {0}
 
-    # test {RENAME against already existing key} {
-    #     r set mykey a
-    #     r set mykey2 b
-    #     r rename mykey2 mykey
-    #     set res [r get mykey]
-    #     append res [r exists mykey2]
-    # } {b0}
+    test {RENAME against already existing key} {
+        r set mykey a
+        r set mykey2 b
+        r rename mykey2 mykey
+        set res [r get mykey]
+        append res [r exists mykey2]
+    } {b0}
 
     test {RENAMENX basic usage} {
         r del mykey

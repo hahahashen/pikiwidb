@@ -387,7 +387,8 @@ void PttlCmd::DoThroughDB(PClient* client) {
 }
 
 RenameCmd::RenameCmd(const std::string& name, int16_t arity)
-    : BaseCmd(name, arity, kCmdFlagsWrite, kAclCategoryWrite | kAclCategoryKeyspace) {}
+    : BaseCmd(name, arity, kCmdFlagsWrite | kCmdFlagsDoThroughDB | kCmdFlagsUpdateCache,
+              kAclCategoryWrite | kAclCategoryKeyspace) {}
 
 bool RenameCmd::DoInitial(PClient* client) {
   client->SetKey(client->argv_[1]);
@@ -395,13 +396,23 @@ bool RenameCmd::DoInitial(PClient* client) {
 }
 
 void RenameCmd::DoCmd(PClient* client) {
-  storage::Status s = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Rename(client->Key(), client->argv_[2]);
-  if (s.ok()) {
+  s_ = PSTORE.GetBackend(client->GetCurrentDB())->GetStorage()->Rename(client->Key(), client->argv_[2]);
+  if (s_.ok()) {
     client->SetRes(CmdRes::kOK);
-  } else if (s.IsNotFound()) {
-    client->SetRes(CmdRes::kNotFound, s.ToString());
+  } else if (s_.IsNotFound()) {
+    client->SetRes(CmdRes::kNotFound, s_.ToString());
   } else {
-    client->SetRes(CmdRes::kErrOther, s.ToString());
+    client->SetRes(CmdRes::kErrOther, s_.ToString());
+  }
+}
+
+void RenameCmd::DoThroughDB(PClient* client) { DoCmd(client); }
+
+void RenameCmd::DoUpdateCache(PClient* client) {
+  if (s_.ok()) {
+    std::vector<std::string> v;
+    v.emplace_back(client->Key());
+    PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->Del(v);
   }
 }
 

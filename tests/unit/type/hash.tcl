@@ -312,15 +312,15 @@ start_server {tags {"hash"}} {
         lappend rv [string match "ERR*not an integer*" $bigerr]
     } {1 1}
 
-    # test {HINCRBY fails against hash value with spaces (right)} {
-    #     r hset smallhash str "11 "
-    #     r hset bighash str "11 "
-    #     catch {r hincrby smallhash str 1} smallerr
-    #     catch {r hincrby smallhash str 1} bigerr
-    #     set rv {}
-    #     lappend rv [string match "ERR*not an integer*" $smallerr]
-    #     lappend rv [string match "ERR*not an integer*" $bigerr]
-    # } {1 1}
+    test {HINCRBY fails against hash value with spaces (right)} {
+        r hset smallhash str "11 "
+        r hset bighash str "11 "
+        catch {r hincrby smallhash str 1} smallerr
+        catch {r hincrby smallhash str 1} bigerr
+        set rv {}
+        lappend rv [string match "ERR*not an integer*" $smallerr]
+        lappend rv [string match "ERR*not an integer*" $bigerr]
+    } {1 1}
 
     test {HINCRBY can detect overflows} {
         set e {}

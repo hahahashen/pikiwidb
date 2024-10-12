@@ -178,15 +178,15 @@ void TtlCmd::ReadCache(PClient* client) {
   rocksdb::Status s;
   auto key = client->Key();
   auto timestamp = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->TTL(key);
-  if (timestamp == -3) {
+  if (timestamp == PCache_TTL_FAILED) {
     client->SetRes(CmdRes::kErrOther, "ttl internal error");
     return;
   }
-  if (timestamp != -2) {
-    client->AppendInteger(timestamp);
-  } else {
+  if (timestamp == PCache_KEY_NOT_FOUND) {
     // mean this key not exist
     client->SetRes(CmdRes::kCacheMiss);
+  } else {
+    client->AppendInteger(timestamp);
   }
 }
 
@@ -215,7 +215,7 @@ void PExpireCmd::DoCmd(PClient* client) {
     s_ = rocksdb::Status::OK();
   } else {
     client->SetRes(CmdRes::kErrOther, "pexpire internal error");
-    s_ = rocksdb::Status::Corruption("expire internal error");
+    s_ = rocksdb::Status::Corruption("pexpire internal error");
   }
 }
 
@@ -369,15 +369,15 @@ void PttlCmd::ReadCache(PClient* client) {
   rocksdb::Status s;
   auto key = client->Key();
   auto timestamp = PSTORE.GetBackend(client->GetCurrentDB())->GetCache()->TTL(key);
-  if (timestamp == -3) {
+  if (timestamp == PCache_TTL_FAILED) {
     client->SetRes(CmdRes::kErrOther, "ttl internal error");
     return;
   }
-  if (timestamp != -2) {
-    client->AppendInteger(timestamp * 1000);
-  } else {
+  if (timestamp == PCache_KEY_NOT_FOUND) {
     // mean this key not exist
     client->SetRes(CmdRes::kCacheMiss);
+  } else {
+    client->AppendInteger(timestamp * 1000);
   }
 }
 

@@ -39,4 +39,6 @@ const int64_t CACHE_LOAD_NUM_ONE_TIME = 256;
 
 // TTL option
 const int PCache_TTL_NONE = -1;
+const int PCache_KEY_NOT_FOUND = -2;
+const int PCache_TTL_FAILED = -3;
 }  // namespace pikiwidb

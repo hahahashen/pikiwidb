@@ -144,10 +144,12 @@ int64_t PCache::TTL(std::string &key) {
   int64_t timestamp = 0;
   int cache_index = CacheIndex(key);
   s = caches_[cache_index]->TTL(key, &timestamp);
-  if (s.ok() || s.IsNotFound()) {
+  if (s.ok()) {
     return timestamp;
+  } else if (s.IsNotFound()) {
+    return PCache_KEY_NOT_FOUND;
   } else if (!s.IsNotFound()) {
-    return -3;
+    return PCache_TTL_FAILED;
   }
   return timestamp;
 }
